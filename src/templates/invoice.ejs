@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            margin: 30px;
+            padding: 0px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .content {
+            border: 1px solid #000;
+        }
+
+        .header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin: 5px 0px 0px 0px;
+        }
+
+        .sub-header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #7f7f7f;
+            margin: 15px 0px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .address {
+            width: 100%;
+            padding-bottom: 15px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+        }
+
+        .address p {
+            margin: 0;
+        }
+
+        .info-ship {
+            width: 100%;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-ship div p {
+            margin: 0;
+        }
+
+        .title,
+        .footer {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .title h1,
+        .footer h3 {
+            margin: 0;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        } 
+
+        th,
+        td {
+            /* padding: 8px; */
+            text-align: center;
+        }
+
+        .info-price{
+            margin: 20px 0px 40px 0px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-price div{
+            width: 50%;
+        }
+
+        .info-price div p {
+            margin: 0;
+        }
+
+        .info-price div div {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            span {
+            width: 60%;
+            display: flex;
+            justify-content: space-between;
+        }
+        }
+
+        .terms p {
+            margin: 0;
+        }
+     
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="header">
+                <h1>PRO-BRIGHTNESS INDUSTRIAL LIMITED</h1>
+                <p>ROOM 825, CITY 3.6 METER APARTMENT, N. 138, RONGHUA ROAD, FUTIAN BONDED AREAFUTIAN DISTRICT</p>
+                <p>SHENZHEN CITY, GUANDONG, CHINA</p>
+                <div class="sub-header">
+                    <h1>INVOICE</h1>
+                </div>
+            </div>
+            <div class="address">
+                <p><strong>Ship to:</strong></p>
+                <p><strong>
+                        <%= branch.name.toUpperCase() %>
+                    </strong></p>
+                <p><%= branch.address.toUpperCase() %> N. <%= branch.number %>
+                     <%= branch.complement ? branch.complement.toUpperCase() : '' %></p>
+                <p><%= branch.neighborhood.toUpperCase() %> - <%= branch.city.toUpperCase() %> - <%= branch.state.toUpperCase() %></p>
+                <p>CEP: <%= formatCEP(branch.zipcode) %>
+                </p>
+                <p>CNPJ: <%= formatCNPJ(branch.cgc) %>
+                </p>
+            </div>
+            <div class="info-ship">
+                <div>
+                    <p>INV. NUMBER: BRF7032824 </p>
+                    <p>DATE: MAR 27, 2024 </p>
+                </div>
+                <div>
+                    <p>From: NINGBO, CHINA</p>
+                    <p>To: NAVEGANTES, BR</p>
+                </div>
+                <div>
+                    <p>Mode of Transport: VESSEL</p>
+                    <p>Kind of Package: BOX</p>
+                    <p>PAYMENT: 60 DAYS AFTER ETA</p>
+                </div>
+            </div>
+    
+            <table class="details">
+                <thead>
+                    <tr>
+                        <th><strong>MARKS & NUMBERS</strong></th>
+                        <th>DESCRIPTIONS</th>
+                        <th>QUANTITIES</th>
+                        <th>UNIT PRICE (USD)</th>
+                        <th>Amount (USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(product=> { %>
+                        <tr>
+                            <td>
+                                <%= product.ref %>
+                            </td>
+                            <td>
+                                <%= product.desc %>
+                            </td>
+                            <td>
+                                <%= product.qtd %>
+                            </td>
+                            <td>
+                                <%= product.unit %>
+                            </td>
+                            <td>
+                                <%= product.total %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="info-price">
+            <div>
+            <p>COUNTRY OF ORIGIN/PROCEDENCE: CHINA</p>
+            <p>COUNTRY OF ACQUISITION: CHINA</p>
+            <p>SELLER: PRO-BRIGHTNESS INDUSTRIAL LIMITED</p>
+            <p>TOTAL CTNS: 385</p>
+            <p>TOTAL G.W.: 14300,00</p>
+            <p>TOTAL N.W.: 13292,48</p>
+            <p>INTERNATIONAL FREIGHT: USD 3100,00</p>
+            </div>
+            <div>
+                <div>
+                    <span>
+                        <p>TOTAL FOB USD</p>
+                        <p><strong>$</strong></p>
+                        <p>32.600,30</p>
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        <p>FREIGHT USD</p>
+                        <p><strong>$</strong></p>
+                        <p>3.100,00</p>
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        <p>TOTAL CFR USD</p>
+                        <p><strong>$</strong></p>
+                        <p>35.700,30</p>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+        <div class="terms">
+            <p><strong>BENEFICIARY NAME:</strong> HONGKONG JINKAER LTD</p>
+            <p><strong>BENEFICIARY ADRESS:</strong> RM. 19C, LOCKHART CTR., 301-307 LOCKHART RD., WANCHAI, HONGKONG</p>
+            <p><strong>BENEFICIARY BANK NAME:</strong> HSBC HONGKONG</p>
+            <p><strong>BENEFICIARY ACCOUNT NO. (USD):</strong> 848-611992-838</p>
+            <p><strong>BANK ADDRESS:</strong> 1 QUEEN'S ROAD CENTRAL, HONG KONG</p>
+            <p><strong>SWIFT CODE:</strong> HSBC HK HHH KH</p>
+            <p><strong>BENEFICIARY BANK CODE:</strong> 004</p>
+
+        </div>
+    </div>
+</body>
+<% 
+  function formatCEP(cep) {
+    if (!cep) return '';
+    return cep.replace(/^(\d{5})(\d{3})$/, '$1-$2'); // Formata como 12345-678
+  }
+
+  function formatCNPJ(cnpj) {
+    if (!cnpj) return '';
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5'); // Formata como 12.345.678/0001-99
+  }
+%>
+
+</html>
