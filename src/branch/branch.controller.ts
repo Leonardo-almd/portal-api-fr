@@ -7,7 +7,7 @@ import { Branch } from 'src/entities/branch.entity';
 type CreatePayload = Omit<Branch, 'created_at' | 'updated_at' | 'deleted_at'>;
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('branch')
+@Controller('api/branch')
 export class BranchController {
   constructor(private readonly service: BranchService) {}
 

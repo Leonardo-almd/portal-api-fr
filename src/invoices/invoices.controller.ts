@@ -10,7 +10,7 @@ import { Invoice } from 'src/entities/invoice.entity';
 type CreatePayload = Omit<Invoice, 'created_at' | 'updated_at' | 'deleted_at'>;
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('invoices')
+@Controller('api/invoices')
 export class InvoicesController {
   constructor(private readonly service: InvoicesService) {}
 

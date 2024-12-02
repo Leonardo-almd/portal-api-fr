@@ -8,7 +8,7 @@ import { User } from 'src/entities/user.entity';
 type CreatePayload = Omit<User, 'created_at' | 'updated_at' | 'deleted_at'>;
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
