@@ -5,6 +5,11 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BranchModule } from './branch/branch.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProcessesController } from './processes/processes.controller';
+import { ProcessesService } from './processes/processes.service';
+import { ProcessesModule } from './processes/processes.module';
+import { CustomersController } from './customers/customers.controller';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [UsersModule, InvoicesModule, AuthModule, 
@@ -26,6 +31,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true, // Torna o ConfigModule acessível em toda a aplicação
     }),
+    ProcessesModule,
+    CustomersModule,
   ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

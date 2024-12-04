@@ -8,6 +8,7 @@ import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Permission } from 'src/entities/permission.entity';
 
 type CreateUserPayload = Omit<User, 'created_at' | 'updated_at' | 'deleted_at'>;
 
@@ -16,6 +17,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Permission)
+    private readonly permissionsRepository: Repository<Permission>
   ) {}
 
   async createUser(
@@ -37,10 +40,25 @@ export class UsersService {
     }
     payload.password = await bcrypt.hash(payload.password, 10);
     const user = this.userRepository.create(payload);
+    const allPermissions = await this.permissionsRepository.find();
+    user.permissions = allPermissions;
     user.createdBy = await this.userRepository.findOne({
       where: { id: requestingUserId },
     });
     return this.userRepository.save(user);
+  }
+
+  async getUserPermissions(userId: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['permissions'], 
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${userId} não encontrado.`);
+    }
+
+    return user.permissions;
   }
 
   async resetPassword(id: number, password: string, requestingUserId: number) {
@@ -103,6 +121,7 @@ export class UsersService {
     return this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.password') 
+      .leftJoinAndSelect('user.permissions', 'permissions')
       .where('user.email = :email', { email })
       .andWhere('user.deleted_at IS NULL')
       .getOne();
@@ -155,4 +174,43 @@ export class UsersService {
     user.is_admin = currentRole;
     return this.userRepository.save(user);
   }
+
+  async updateUserPermissions(userId: number, permissions: { entity: string; label: string; enable: boolean }[], requestingUserId: number): Promise<void> {
+    const requestingUser = await this.userRepository.findOne({
+      where: { id: requestingUserId },
+    });
+
+    if (!requestingUser || !requestingUser.is_admin) {
+      throw new ForbiddenException(
+        'Você não tem permissão para alterar a permissão do usuário.',
+      );
+    }
+
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['permissions'] });
+  
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+  
+    const newPermissions = await Promise.all(
+      permissions
+        .filter(p => p.enable)
+        .map(async p => {
+          const permission = await this.permissionsRepository.findOne({
+            where: { entity: p.entity },
+          });
+          if (!permission) {
+            throw new NotFoundException(
+              `Permissão com a entidade '${p.entity}' não encontrada.`,
+            );
+          }
+          return permission;
+        }),
+    );
+  
+    user.permissions = newPermissions;
+  
+    await this.userRepository.save(user);
+  }
+  
 }

@@ -1,17 +1,18 @@
-import { Controller, Delete, Get, Param, ParseIntPipe, Query, UseGuards, Request, Body, Post } from '@nestjs/common';
+import { Body, Controller, Get, ParseIntPipe, Post, Query, UseGuards, Request, Delete, Param} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { BranchService } from './branch.service';
+import { Process } from 'src/entities/process.entity';
 import { trimObjectStrings } from 'src/helpers/helpers';
-import { Branch } from 'src/entities/branch.entity';
+import { Customer } from 'src/entities/customer.entity';
+import { CustomersService } from './customers.service';
 import { PermissionsGuard } from 'src/guards/permissions.guard';
 import { Permissions } from '../decorators/permissions.decorator';
 
-type CreatePayload = Omit<Branch, 'created_at' | 'updated_at' | 'deleted_at'>;
+type CreatePayload = Omit<Customer, 'created_at' | 'updated_at' | 'deleted_at'>;
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-@Controller('api/branch')
-export class BranchController {
-  constructor(private readonly service: BranchService) {}
+@Controller('api/customer')
+export class CustomersController {
+    constructor(private readonly service: CustomersService) {}
 
   @Get('quicksearch')
   @Permissions('customers')

@@ -82,10 +82,6 @@ export class BranchService {
       async delete(id: number, requestingUserId: number) {
         const requestingUser = await this.userRepository.findOne({ where: { id: requestingUserId } });
     
-         if (!requestingUser || !requestingUser.is_admin) {
-           throw new ForbiddenException('Você não tem permissão para excluir filiais.');
-         }
-    
          const branch = await this.repository.findOne({ where: { id } });
      
          if (!branch) {

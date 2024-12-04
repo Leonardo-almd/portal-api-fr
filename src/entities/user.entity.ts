@@ -1,5 +1,6 @@
 // src/users/user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Permission } from './permission.entity';
 
 @Entity('users')
 export class User {
@@ -17,6 +18,14 @@ export class User {
 
   @Column({ default: false })
   is_admin: boolean;
+
+  @ManyToMany(() => Permission)
+  @JoinTable({
+    name: 'user_permissions', // Nome da tabela de junção
+    joinColumn: { name: 'userId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'permissionId', referencedColumnName: 'id' },
+  })
+  permissions: Permission[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date; 

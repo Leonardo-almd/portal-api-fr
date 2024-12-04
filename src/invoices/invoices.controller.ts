@@ -6,15 +6,18 @@ import { InvoicesService } from './invoices.service';
 import { AuthGuard } from '@nestjs/passport';
 import puppeteer from 'puppeteer';
 import { Invoice } from 'src/entities/invoice.entity';
+import { PermissionsGuard } from 'src/guards/permissions.guard';
+import { Permissions } from '../decorators/permissions.decorator';
 
 type CreatePayload = Omit<Invoice, 'created_at' | 'updated_at' | 'deleted_at'>;
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('api/invoices')
 export class InvoicesController {
   constructor(private readonly service: InvoicesService) {}
 
   @Post()
+  @Permissions('invoice')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Body() payload: CreatePayload, @Request() req) {
     if (!file) {
@@ -24,6 +27,7 @@ export class InvoicesController {
   }
 
   @Get(':id/export')
+  @Permissions('invoice')
   async exportInvoices(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const html = await this.service.exportInvoice(id);
 
@@ -49,12 +53,14 @@ export class InvoicesController {
   }
 
   @Get()
+  @Permissions('invoice')
   async findAll(@Query('page', ParseIntPipe) page: number = 1, @Query('pageSize', ParseIntPipe) pageSize: number = 10, @Query('search') search: string) {
     const queryParams = { page: Number(page), pageSize: Number(pageSize), search: search?.trim() };
     return this.service.findAll(queryParams);
   }
 
   @Delete(':id')
+  @Permissions('invoice')
   async delete(@Param('id', ParseIntPipe) id: number, @Request() req) {
     const requestingUserId = req.user.id;
     return this.service.delete(id, requestingUserId);

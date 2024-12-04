@@ -140,10 +140,6 @@ export class InvoicesService {
   async delete(id: number, requestingUserId: number) {
     const requestingUser = await this.userRepository.findOne({ where: { id: requestingUserId } });
 
-     if (!requestingUser || !requestingUser.is_admin) {
-       throw new ForbiddenException('Você não tem permissão para excluir invoices.');
-     }
-
      const invoice = await this.repository.findOne({ where: { id } });
  
      if (!invoice) {
