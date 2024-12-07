@@ -5,11 +5,9 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BranchModule } from './branch/branch.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ProcessesController } from './processes/processes.controller';
-import { ProcessesService } from './processes/processes.service';
 import { ProcessesModule } from './processes/processes.module';
-import { CustomersController } from './customers/customers.controller';
 import { CustomersModule } from './customers/customers.module';
+import { InternationalShippingModule } from './international-shipping/international-shipping.module';
 
 @Module({
   imports: [UsersModule, InvoicesModule, AuthModule, 
@@ -23,7 +21,7 @@ import { CustomersModule } from './customers/customers.module';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        autoLoadEntities: true, // Carrega as entidades automaticamente
+        autoLoadEntities: configService.get<string>('DATABASE_SYNC') === 'true', // Carrega as entidades automaticamente
         synchronize: true,      // Não use em produção!
       }),
     }),
@@ -33,6 +31,7 @@ import { CustomersModule } from './customers/customers.module';
     }),
     ProcessesModule,
     CustomersModule,
+    InternationalShippingModule,
   ],
   controllers: [],
   providers: [],

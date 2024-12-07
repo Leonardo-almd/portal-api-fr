@@ -6,19 +6,29 @@ import { Customer } from 'src/entities/customer.entity';
 import { CustomersService } from './customers.service';
 import { PermissionsGuard } from 'src/guards/permissions.guard';
 import { Permissions } from '../decorators/permissions.decorator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 type CreatePayload = Omit<Customer, 'created_at' | 'updated_at' | 'deleted_at'>;
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('api/customer')
 export class CustomersController {
-    constructor(private readonly service: CustomersService) {}
+    constructor(private readonly service: CustomersService, @InjectRepository(Customer)
+    private readonly repository: Repository<Customer>) {}
 
   @Get('quicksearch')
   @Permissions('customers')
   async quickSearch(@Query('value') filter: string) {
     filter === 'undefined' || filter === 'null' ? filter = null : filter;
     return this.service.quickSearch(filter?.trim());
+  }
+
+  @Get('quicksearch/:id')
+  @Permissions('customers')
+  async quickSearchById(@Param('id', ParseIntPipe) id: number) {
+    const customer = await this.repository.findOne({ where: { id } });
+    return {label: customer.name, value: customer.id}
   }
 
   @Get()

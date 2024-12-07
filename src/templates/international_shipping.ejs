@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        margin: 40px 20px;
+        p{
+            margin: 0px 0px 2px 0px;
+            padding: 0;
+        }
+      }
+      .header {
+        width: 100%;
+        padding-bottom: 15px;
+        display: flex;
+        border-bottom: 1px solid #000;
+      }
+      .header > div {
+        text-align: left; 
+        flex: 1;
+      }
+      .header img {
+        max-width: 250px;
+        height: auto;
+        padding-left: 20px;
+      }
+      .invoice-number {
+        text-align: center;
+        font-size: 24px;
+        padding: 5px 0px;
+        border-bottom: 1px solid #000;
+      }
+      .customer {
+        padding: 15px 0px;
+        text-align: left;
+        border-bottom: 1px solid #000;
+      }
+      .content {
+        padding: 15px 0px;
+        text-align: left;
+        border-bottom: 1px solid #000;
+        .details {
+            padding-top: 15px;
+            text-align: left;
+            display: flex;
+            div {
+                flex: 1;
+            }
+        }
+      }
+      .footer {
+        text-align: center;
+      }
+      .table {
+      text-align: center;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .table th, .table td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    .table th {
+      background-color: #f2f2f2;
+    }
+    .table-footer {
+      margin-top: 20px;
+    }
+    .table-footer td {
+      border: none;
+      text-align: right;
+      font-weight: bold;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+        <div>
+            <img src="<%= logo %>"/>
+        </div>
+        <div>
+            <p><b><%= branch.name %></b></p>
+            <p><%= branch.address %>, <%= branch.number %> </p>
+            <p><%= branch.neighborhood %>, <%= branch.city %> - <%= branch.state %> - CEP: <%= branch.zipcode %></p>
+            <p>CNPJ: <%= formatCNPJ(branch.cgc) %> </p>
+            <p>Telefone: ? </p>
+            <p>Site: ? </p>
+            <p>E-mail: ? </p>
+        </div>
+    </div>
+    <div class="invoice-number">
+        <span><strong>FATURA F7001</strong></span>
+    </div>
+    <div class="customer">
+        <p>Tomador:</p>
+        <p>CNPJ: <%= formatCNPJ(customer.cgc) %></p>
+        <p><%= customer.name %></p>
+        <p>Endereço: <%= customer.address %>, <%= customer.number %></p>
+        <p>Bairro: <%= customer.neighborhood %> - CEP: <%= customer.zipcode %></p>
+        <p>Cidade: <%= customer.city %> - Estado: <%= customer.state %></p>
+        <p>Telefone: </p>
+    </div>
+    <div class="content">
+        <div>
+            <p>Processo: <%= process.name %></p>
+        <p>Exportador: <%= process.exporter %></p>
+        <p>Importador: <%= process.importer %></p>
+        <p>B/L House: <%= process.bl %> Origem: <%= process.originHarbor %></p>
+        <p>Destino: <%= process.destinationHarbor %></p>
+        </div>
+        <div class="details">
+            <div>
+                <p>Data de Saida: <%= formatDate(departure_date) %>
+                </p>
+                <p>Navio: <%= ship_name %> Viagem: <%= voyage_number %>
+                </p>
+                <p>Data limite para devolução: <%= formatDate(return_deadline) %>
+                </p>
+                <p>Container(s): <%= container %>
+                </p>
+            </div>
+            <div>
+                <p>Data de Atracação: <%= formatDate(arrival_date) %>
+                </p>
+                <p>Tipo Frete: <%= freight_type %>
+                </p>
+                <p>Diária Demurrage: USD <%= demurrage_fee %>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="charges">
+        <table class="table">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th>Moeda</th>
+                <th>Valor na Moeda</th>
+                <th>Taxa</th>
+                <th>Valor em Reais</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% freight_charges.forEach(charge => { %>
+                <tr>
+                  <td><%= charge.description %></td>
+                  <td><%= charge.currency %></td>
+                  <td><%= formatCurrency(charge.amount, charge.currency) %></td>
+                  <td><%= charge.currency_rate.toFixed(2) %></td>
+                  <td><%= formatCurrency(charge.amount * charge.currency_rate, 'BRL') %> </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <table>
+              <tr>
+                <td>Total (USD):</td>
+                <td><%= freight_charges
+                  .filter(charge => charge.currency === 'USD')
+                  .reduce((sum, charge) => sum + charge.amount, 0).toFixed(2) %> USD</td>
+              </tr>
+              <tr>
+                <td>Total (BRL):</td>
+                <td><%= freight_charges
+                  .filter(charge => charge.currency === 'BRL')
+                  .reduce((sum, charge) => sum + charge.amount, 0).toFixed(2) %> R$</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+    <div class="footer">
+      <p>Falcon Logística</p>
+      <p>Endereço: Rua Fernando Falcão, 1111 sala 2608, São Paulo - SP</p>
+    </div>
+  </body>
+</html>

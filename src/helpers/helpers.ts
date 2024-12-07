@@ -10,5 +10,21 @@ export function trimObjectStrings<T>(obj: T): T {
         typeof value === 'string' ? value.trim() : value
       ])
     ) as T;
+  };
+
+  export function formatDate(dateString) {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  }
+
+  export function formatCNPJ(cnpj) {
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  }
+
+  export function formatCurrency(amount, currency) {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
   }
   

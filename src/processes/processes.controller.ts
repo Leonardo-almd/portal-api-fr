@@ -5,19 +5,29 @@ import { trimObjectStrings } from 'src/helpers/helpers';
 import { ProcessesService } from './processes.service';
 import { PermissionsGuard } from 'src/guards/permissions.guard';
 import { Permissions } from '../decorators/permissions.decorator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 type CreatePayload = Omit<Process, 'created_at' | 'updated_at' | 'deleted_at'>;
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('api/process')
 export class ProcessesController {
-    constructor(private readonly service: ProcessesService) {}
+    constructor(private readonly service: ProcessesService, @InjectRepository(Process)
+    private readonly repository: Repository<Process>) {}
 
   @Get('quicksearch')
   @Permissions('processes')
   async quickSearch(@Query('value') filter: string) {
     filter === 'undefined' || filter === 'null' ? filter = null : filter;
     return this.service.quickSearch(filter?.trim());
+  }
+
+  @Get('quicksearch/:id')
+  @Permissions('processes')
+  async quickSearchById(@Param('id', ParseIntPipe) id: number) {
+    const customer = await this.repository.findOne({ where: { id } });
+    return {label: customer.name, value: customer.id}
   }
 
   @Get()
