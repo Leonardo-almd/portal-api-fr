@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProcessesModule } from './processes/processes.module';
 import { CustomersModule } from './customers/customers.module';
 import { InternationalShippingModule } from './international-shipping/international-shipping.module';
+import { PingModule } from './ping/ping.module';
 
 @Module({
   imports: [UsersModule, InvoicesModule, AuthModule, 
@@ -32,6 +33,7 @@ import { InternationalShippingModule } from './international-shipping/internatio
     ProcessesModule,
     CustomersModule,
     InternationalShippingModule,
+    PingModule,
   ],
   controllers: [],
   providers: [],
