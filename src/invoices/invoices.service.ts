@@ -1,6 +1,5 @@
 // src/invoices/invoices.service.ts
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { db, adm } from '../firebase/firebase.config';
 import * as XLSX from 'xlsx';
 import * as path from 'path';
 import * as ejs from 'ejs';
