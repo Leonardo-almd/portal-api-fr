@@ -31,7 +31,9 @@ export class InvoicesController {
   async exportInvoices(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const html = await this.service.exportInvoice(id);
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/google-chrome', // utilizar apenas em produção
+    });
     const [page] = await browser.pages();
     await page.setContent(html as string, { waitUntil: 'load' });
 

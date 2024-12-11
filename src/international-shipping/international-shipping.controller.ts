@@ -30,7 +30,9 @@ export class InternationalShippingController {
   ) {
     const html = await this.service.export(id);
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/google-chrome', // utilizar apenas em produção
+    });
     const [page] = await browser.pages();
     await page.setContent(html as string, { waitUntil: 'load' });
 
