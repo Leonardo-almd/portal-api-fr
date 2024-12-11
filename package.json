@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && cp -r src/templates dist/",
+    "build": "nest build && cp -r src/templates dist/ && cp -r src/assets dist/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "serve": "ts-node -r tsconfig-paths/register src/main.ts",
     "start": "nest start",
