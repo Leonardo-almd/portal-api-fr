@@ -33,6 +33,15 @@ export class Branch {
   @Column()
   zipcode: string;
 
+  @Column({nullable: true})
+  phone: string;
+
+  @Column({nullable: true})
+  email: string;
+
+  @Column({nullable: true})
+  site: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date; 
 

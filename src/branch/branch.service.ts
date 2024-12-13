@@ -63,6 +63,8 @@ export class BranchService {
             { search: `%${search}%` }
           );
         }
+
+        query.orderBy('branch.updated_at', 'DESC');
       
         const [data, total] = await query
           .skip((page - 1) * pageSize)

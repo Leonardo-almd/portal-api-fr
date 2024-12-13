@@ -38,6 +38,16 @@
         text-align: left;
         border-bottom: 1px solid #000;
       }
+      .bank {
+        padding: 15px 0px;
+        text-align: left;
+        /* border-bottom: 1px solid #000; */
+      }
+      .dates {
+        /* padding: 15px 0px; */
+        text-align: right;
+        /* border-bottom: 1px solid #000; */
+      }
       .content {
         padding: 15px 0px;
         text-align: left;
@@ -52,6 +62,7 @@
         }
       }
       .footer {
+        margin-top: 20px;
         text-align: center;
       }
       .table {
@@ -88,13 +99,13 @@
             <p><%= branch.address %>, <%= branch.number %> </p>
             <p><%= branch.neighborhood %>, <%= branch.city %> - <%= branch.state %> - CEP: <%= branch.zipcode %></p>
             <p>CNPJ: <%= formatCNPJ(branch.cgc) %> </p>
-            <p>Telefone: ? </p>
-            <p>Site: ? </p>
-            <p>E-mail: ? </p>
+            <p>Telefone: <%= formatPhone(branch.phone) %> </p>
+            <p>Site: <a href="<%= branch.site %>"><%= branch.site %></a></p>
+            <p>E-mail: <%= branch.email %> </p>
         </div>
     </div>
     <div class="invoice-number">
-        <span><strong>FATURA F7001</strong></span>
+        <span><strong>FATURA <%= invoice_name %></strong></span>
     </div>
     <div class="customer">
         <p>Tomador:</p>
@@ -103,7 +114,7 @@
         <p>Endereço: <%= customer.address %>, <%= customer.number %></p>
         <p>Bairro: <%= customer.neighborhood %> - CEP: <%= customer.zipcode %></p>
         <p>Cidade: <%= customer.city %> - Estado: <%= customer.state %></p>
-        <p>Telefone: </p>
+        <p>Telefone: <%= formatPhone(customer.phone) %></p>
     </div>
     <div class="content">
         <div>
@@ -129,7 +140,7 @@
                 </p>
                 <p>Tipo Frete: <%= freight_type %>
                 </p>
-                <p>Diária Demurrage: USD <%= demurrage_fee %>
+                <p>Diária Demurrage: <%= formatCurrency(demurrage_fee, demurrage_currency) %>
                 </p>
 
             </div>
@@ -176,6 +187,19 @@
             </table>
           </div>
         </div>
+
+    <div class="dates">
+        <p>Data de Emissão: <%= formatDate(issue_date) %></p>
+        <p>Data de Vencimento: <%= formatDate(due_date) %></p>
+    </div>
+    
+    <div class="bank">
+          <p>Dados bancários:</p>
+          <p>Banco: BANCO ITAÚ</p>
+          <p>Agência: 0672</p>
+          <p>Conta: 99171-8</p>
+          <p>Chave PIX: 57497199000122</p>
+    </div>
 
     <div class="footer">
       <p>Falcon Logística</p>

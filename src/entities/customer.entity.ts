@@ -33,7 +33,7 @@ export class Customer {
   @Column()
   zipcode: string;
 
-  @Column()
+  @Column({nullable: true})
   phone: string;
 
   @CreateDateColumn({ type: 'timestamp' })

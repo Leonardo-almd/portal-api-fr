@@ -6,7 +6,7 @@ import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as path from 'path';
 import * as fs from 'fs';
-import { formatCNPJ, formatCurrency, formatDate } from 'src/helpers/helpers';
+import { formatCNPJ, formatCurrency, formatDate, formatPhoneNumber } from 'src/helpers/helpers';
 
 type CreatePayload = Omit<InternationalShipping, 'created_at' | 'updated_at' | 'deleted_at'>;
 
@@ -26,7 +26,6 @@ export class InternationalShippingService {
           if(internationalShipping){
             Object.assign(internationalShipping, payload);
             internationalShipping.updatedBy = await this.userRepository.findOne({ where: { id: requestingUserId } });
-            console.log(internationalShipping)
             return this.repository.save(internationalShipping);
           }
         }
@@ -69,6 +68,8 @@ export class InternationalShippingService {
             { search: `%${search}%` },
           );
         }
+
+        query.orderBy('international_shipping.updated_at', 'DESC');
       
         const [data, total] = await query
           .skip((page - 1) * pageSize) // Paginação: pula os registros das páginas anteriores
@@ -104,6 +105,8 @@ export class InternationalShippingService {
         internationalShipping.formatCNPJ = formatCNPJ;
         internationalShipping.formatDate = formatDate;
         internationalShipping.formatCurrency = formatCurrency;
+        internationalShipping.formatPhone = formatPhoneNumber;
+        internationalShipping.issue_date = new Date();
         return ejs.render(template, internationalShipping);
       }
 

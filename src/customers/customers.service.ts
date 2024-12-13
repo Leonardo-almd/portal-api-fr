@@ -63,6 +63,8 @@ export class CustomersService {
             { search: `%${search}%` }
           );
         }
+
+        query.orderBy('customer.updated_at', 'DESC');
       
         const [data, total] = await query
           .skip((page - 1) * pageSize)

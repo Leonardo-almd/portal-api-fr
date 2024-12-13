@@ -45,14 +45,23 @@ import { User } from './user.entity';
     @Column()
     voyage_number: string; // Número da Viagem
 
+    @Column({nullable: true})
+    invoice_name: string; // Número da Viagem
+
     @Column()
     freight_type: string; // Tipo de Frete (Prepaid, Collect)
 
     @Column({ type: 'date' })
     return_deadline: Date; // Data limite para devolução
 
+    @Column({type: 'date', nullable: true})
+    due_date: Date;
+
     @Column()
     container: string; // Informações do Container
+
+    @Column({nullable: true})
+    demurrage_currency: string; // Moeda da Demurrage
 
     @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
     demurrage_fee: number; // Diária de Demurrage (se aplicável)

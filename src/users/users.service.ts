@@ -103,6 +103,8 @@ export class UsersService {
       );
     }
 
+    query.orderBy('user.updated_at', 'DESC');
+
     const [data, total] = await query
       .skip((page - 1) * pageSize)
       .take(pageSize)
