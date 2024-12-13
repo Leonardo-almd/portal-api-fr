@@ -34,7 +34,7 @@ export function trimObjectStrings<T>(obj: T): T {
     const regex = /^55(\d{2})(\d{5})(\d{4})$/;
   
     if (!regex.test(phone)) {
-      return 'Número inválido';
+      return '';
     }
   
     return phone.replace(regex, '+55 ($1) $2-$3');
