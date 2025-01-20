@@ -15,7 +15,10 @@ export class Customer {
   @Column()
   address: string;
 
-  @Column()
+  @Column({nullable: true, transformer: {
+    to: (value: any) => (value === '' ? null : Number(value)), 
+    from: (value: any) => value, 
+  }})
   number: number;
 
   @Column()

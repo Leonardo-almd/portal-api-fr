@@ -9,6 +9,8 @@ import { ProcessesModule } from './processes/processes.module';
 import { CustomersModule } from './customers/customers.module';
 import { InternationalShippingModule } from './international-shipping/international-shipping.module';
 import { PingModule } from './ping/ping.module';
+import { ExporterController } from './exporter/exporter.controller';
+import { ExporterModule } from './exporter/exporter.module';
 
 @Module({
   imports: [UsersModule, InvoicesModule, AuthModule, 
@@ -24,6 +26,7 @@ import { PingModule } from './ping/ping.module';
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: configService.get<string>('DATABASE_SYNC') === 'true', // Carrega as entidades automaticamente
         synchronize: true,      // Não use em produção!
+        // logging: true,
       }),
     }),
     BranchModule,
@@ -34,6 +37,7 @@ import { PingModule } from './ping/ping.module';
     CustomersModule,
     InternationalShippingModule,
     PingModule,
+    ExporterModule,
   ],
   controllers: [],
   providers: [],

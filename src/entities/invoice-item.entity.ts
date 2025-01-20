@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { Invoice } from './invoice.entity';
 
 @Entity('invoice_item')
@@ -33,8 +33,11 @@ export class InvoiceItem {
   @Column('decimal', { nullable: true })
   pl: string;
 
-  @ManyToOne(() => Invoice )
+  @ManyToOne(() => Invoice, { onDelete: 'CASCADE' } )
   @JoinColumn({ name: 'invoice' })
   invoice: Invoice;
+
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  deleted_at: Date | null;
 
 }

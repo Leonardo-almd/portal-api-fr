@@ -8,6 +8,7 @@ import puppeteer from 'puppeteer';
 import { Invoice } from 'src/entities/invoice.entity';
 import { PermissionsGuard } from 'src/guards/permissions.guard';
 import { Permissions } from '../decorators/permissions.decorator';
+import archiver from 'archiver';
 
 type CreatePayload = Omit<Invoice, 'created_at' | 'updated_at' | 'deleted_at'>;
 
@@ -20,7 +21,7 @@ export class InvoicesController {
   @Permissions('invoice')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Body() payload: CreatePayload, @Request() req) {
-    if (!file) {
+    if (!file && !payload.id) {
       throw new Error('Arquivo não encontrado.');
     }
     return this.service.createInvoice(file, payload, req.user.id);
@@ -28,31 +29,48 @@ export class InvoicesController {
 
   @Get(':id/export')
   @Permissions('invoice')
-  async exportInvoices(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
-    const html = await this.service.exportInvoice(id);
-
+  async exportInvoices(@Param('id', ParseIntPipe) id: number, @Query('model') model: string, @Res() res: Response) {
+    const htmlInvoice = await this.service.export(id, model, 'invoice');
+    const htmlPackingList = await this.service.export(id, model, 'packing-list');
+  
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/google-chrome', 
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // utilizar apenas em produção
+      executablePath: '/usr/bin/google-chrome',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // usar apenas em produção
     });
-    const [page] = await browser.pages();
-    await page.setContent(html as string, { waitUntil: 'load' });
-
-    const pdfBuffer = await page.pdf({
+  
+    // Gerar PDF para a invoice
+    const [pageInvoice] = await browser.pages();
+    await pageInvoice.setContent(htmlInvoice as string, { waitUntil: 'load' });
+    const pdfInvoice = await pageInvoice.pdf({
       format: 'A4',
       printBackground: true,
-      margin: { bottom: 5, left: 5, top: 5, right: 5 }
+      margin: { bottom: 5, left: 5, top: 5, right: 5 },
     });
-
+  
+    // Gerar PDF para o packing list
+    const [pagePackingList] = await browser.pages();
+    await pagePackingList.setContent(htmlPackingList as string, { waitUntil: 'load' });
+    const pdfPackingList = await pagePackingList.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { bottom: 5, left: 5, top: 5, right: 5 },
+    });
+  
     await browser.close();
-
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename=invoice.pdf',
-      'Content-Length': pdfBuffer.length,
-    });
-
-    res.end(pdfBuffer);
+  
+    // Configuração para criar o arquivo ZIP
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', 'attachment; filename=invoices_and_packing-list.zip');
+  
+    const archive = archiver('zip', { zlib: { level: 9 } });
+    archive.pipe(res);
+  
+    // Adiciona os PDFs ao ZIP
+    archive.append(pdfInvoice, { name: 'invoice.pdf' });
+    archive.append(pdfPackingList, { name: 'packing-list.pdf' });
+  
+    // Finaliza o arquivo ZIP e envia
+    await archive.finalize();
   }
 
   @Get()

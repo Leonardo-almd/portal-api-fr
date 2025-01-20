@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            margin: 30px;
+            padding: 0px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .content {
+            border: 1px solid #000;
+        }
+
+        .header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin: 5px 0px 0px 0px;
+        }
+
+        .sub-header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #7f7f7f;
+            margin: 15px 0px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .address {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            padding-bottom: 15px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+            div {
+                flex: 1;
+            }
+        }
+
+        .address p {
+            margin: 0;
+        }
+
+        .info-ship {
+            width: 100%;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-ship div p {
+            margin: 0;
+        }
+
+        .title,
+        .footer {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .title h1,
+        .footer h3 {
+            margin: 0;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        } 
+
+        th,
+        td {
+            /* padding: 8px; */
+            text-align: center;
+        }
+
+        .info-price{
+            margin: 20px 0px 40px 0px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-price div{
+            width: 50%;
+        }
+
+        .info-price div p {
+            margin: 0;
+        }
+
+        .info-price div div {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            span {
+            width: 60%;
+            display: flex;
+            justify-content: space-between;
+        }
+        }
+
+        .terms p {
+            margin: 0;
+        }
+
+        .stamp {
+            padding-top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .stamp img {
+            max-width: 150px;
+            height: auto;
+            padding-left: 20px;
+          }
+     
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="header">
+                <h1><%= exporter.name?.toUpperCase() %></h1>
+                <p><%= exporter.complement?.toUpperCase() %>, <%= exporter.number %>, <%= exporter.address?.toUpperCase() %></p>
+                <p><%= exporter.city?.toUpperCase() %>, <%= exporter.state?.toUpperCase() %>, <%= exporter.country?.toUpperCase() %></p>
+                <div class="sub-header">
+                    <h1>COMMERCIAL INVOICE</h1>
+                </div>
+            </div>
+            <div class="address">
+             <div>
+                <p><strong>Ship to:</strong></p>
+                <p><strong>
+                        <%= import_customer.name.toUpperCase() %>
+                    </strong></p>
+                <p><%= import_customer.address.toUpperCase() %> N. <%= import_customer.number %>
+                     <%= import_customer.complement ? import_customer.complement.toUpperCase() : '' %></p>
+                <p><%= import_customer.neighborhood.toUpperCase() %> - <%= import_customer.city.toUpperCase() %> - <%= import_customer.state.toUpperCase() %></p>
+                <p>CEP: <%= formatCEP(import_customer.zipcode) %>
+                </p>
+                <p>CNPJ: <%= formatCNPJ(import_customer.cgc) %>
+                </p>
+             </div>
+            <% if (buyer_customer) { %>
+                <div >
+                <p><strong>Buyer:</strong></p>
+                <p><strong>
+                        <%= buyer_customer.name.toUpperCase() %>
+                    </strong></p>
+                <p><%= buyer_customer.address.toUpperCase() %> N. <%= buyer_customer.number %>
+                     <%= buyer_customer.complement ? buyer_customer.complement.toUpperCase() : '' %></p>
+                <p><%= buyer_customer.neighborhood.toUpperCase() %> - <%= buyer_customer.city.toUpperCase() %> - <%= buyer_customer.state.toUpperCase() %></p>
+                <p>CEP: <%= formatCEP(buyer_customer.zipcode) %>
+                </p>
+                <p>CNPJ: <%= formatCNPJ(buyer_customer.cgc) %>
+                </p>
+             </div>
+            <% } %>
+            </div>
+            <div class="info-ship">
+                <div>
+                    <p>INV. NUMBER: <%= number %> </p>
+                    <p>DATE: <%= formatDate(date) %> </p>
+                </div>
+                <div>
+                    <p>FROM: <%= from %></p>
+                    <p>TO: <%= to %></p>
+                </div>
+                <div>
+                    <p>MODE OF TRANSPORT:  <%= model_transport %></p>
+                    <p>KIND OF PACKAGE:  <%= kind_package %></p>
+                    <p>PAYMENT:  <%= payment %></p>
+                </div>
+            </div>
+    
+            <table class="details">
+                <thead>
+                    <tr>
+                        <th><strong>MARKS & NUMBERS</strong></th>
+                        <th>DESCRIPTIONS</th>
+                        <th>QUANTITIES</th>
+                        <th>UNIT PRICE (USD)</th>
+                        <th>Amount (USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(product=> { %>
+                        <tr>
+                            <td>
+                                <%= product.ref %>
+                            </td>
+                            <td>
+                                <%= product.desc %>
+                            </td>
+                            <td>
+                                <%= product.qtd %>
+                            </td>
+                            <td>
+                                <%= product.unit %>
+                            </td>
+                            <td>
+                                <%= parseFloat(product.total).toFixed(2) %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="info-price">
+            <div>
+            </div>
+            <div>
+                <div>
+                    <span>
+                        <p>TOTAL FOB USD</p>
+                        <p><strong>$</strong></p>
+                        <p><%= subtotal.toFixed(2) %></p>
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        <p>FREIGHT USD</p>
+                        <p><strong>$</strong></p>
+                        <p> <%= shipping_value ? shipping_value.toFixed(2) : 0,00 %></p>
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        <p>TOTAL CFR USD</p>
+                        <p><strong>$</strong></p>
+                        <p><%= total.toFixed(2) %></p>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+        <div class="terms">
+            <p><strong>BENEFICIARY NAME:</strong> <%= beneficiary_name %></p>
+            <p><strong>BENEFICIARY ADRESS:</strong> <%= beneficiary_address %></p>
+            <p><strong>BENEFICIARY BANK NAME:</strong> <%= bank_name %></p>
+            <p><strong>BENEFICIARY ACCOUNT NO. (USD):</strong> <%= account_number %></p>
+            <p><strong>BANK ADDRESS:</strong> <%= bank_address %></p>
+            <p><strong>SWIFT CODE:</strong><%= swift %></p>
+            <p><strong>BENEFICIARY BANK CODE:</strong> <%= bank_code %></p>
+
+        </div>
+        <div class="stamp">
+            <img src="<%= stamp %>"/>
+        </div>
+    </div>
+</body>
+<% 
+  function formatCEP(cep) {
+    if (!cep) return '';
+    return cep.replace(/^(\d{5})(\d{3})$/, '$1-$2'); // Formata como 12345-678
+  }
+
+  function formatCNPJ(cnpj) {
+    if (!cnpj) return '';
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5'); // Formata como 12.345.678/0001-99
+  }
+%>
+
+</html>

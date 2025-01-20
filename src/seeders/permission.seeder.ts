@@ -12,6 +12,7 @@ export class PermissionSeeder {
       { entity: 'processes', label: 'Processos' },
       { entity: 'users', label: 'Usuários' },
       { entity: 'international-shipping', label: 'Frete Internacional' },
+      { entity: 'exporters', label: 'Exportadores' },
     ];
 
     for (const permission of permissions) {

@@ -1,18 +1,16 @@
+// src/users/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity('branches')
-export class Branch {
+@Entity('exporters')
+export class Exporter {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })
   name: string;
 
-  @Column({ unique: true })
-  cgc: string;
-
-  @Column()
+  @Column({nullable: true})
   address: string;
 
   @Column({nullable: true, transformer: {
@@ -21,29 +19,23 @@ export class Branch {
   }})
   number: number;
 
-  @Column()
+  @Column({nullable: true})
   complement: string;
 
-  @Column()
+  @Column({nullable: true})
   neighborhood: string;
 
-  @Column()
+  @Column({nullable: true})
   city: string;
 
-  @Column()
+  @Column({nullable: true})
   state: string;
 
-  @Column()
-  zipcode: string;
-
   @Column({nullable: true})
-  phone: string;
+  country: string;
 
-  @Column({nullable: true})
-  email: string;
-
-  @Column({nullable: true})
-  site: string;
+  @Column({ type: 'bytea', nullable: true}) 
+  stamp: Buffer;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date; 

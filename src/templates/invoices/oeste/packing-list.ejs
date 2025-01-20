@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Packing List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            margin: 30px;
+            padding: 0px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .content {
+            border: 1px solid #000;
+        }
+
+        .header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin: 5px 0px 0px 0px;
+        }
+
+        .sub-header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #7f7f7f;
+            margin: 15px 0px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .address {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            padding-bottom: 15px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+            div {
+                flex: 1;
+            }
+        }
+
+        .address p {
+            margin: 0;
+        }
+
+        .info-ship {
+            width: 100%;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-ship div p {
+            margin: 0;
+        }
+
+        .title,
+        .footer {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .title h1,
+        .footer h3 {
+            margin: 0;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        } 
+
+        th,
+        td {
+            /* padding: 8px; */
+            text-align: center;
+        }
+
+        .info-price{
+            margin: 20px 0px 40px 0px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-price div{
+            width: 50%;
+        }
+
+        .info-price div p {
+            margin: 0;
+        }
+
+        .info-price div div {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            span {
+            width: 60%;
+            display: flex;
+            justify-content: space-between;
+        }
+        }
+
+        .stamp {
+            padding-top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .stamp img {
+            max-width: 150px;
+            height: auto;
+            padding-left: 20px;
+          }
+     
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="header">
+                <h1>寧波鎮海美蘭國際</h1>
+                <p>NINGBO ZHENHAI MELAN INTERNATIONAL TRADE SERVICE CO. LTD</p>
+                <p>Add: 306 YANJIANG EAST ROAD ZHENHAI, NINBO, CHINA</p>
+                <div class="sub-header">
+                    <h1>PACKING LIST</h1>
+                </div>
+            </div>
+            <div class="address">
+             <div>
+                <p><strong>Ship to:</strong></p>
+                <p><strong>
+                        <%= import_customer.name.toUpperCase() %>
+                    </strong></p>
+                <p><%= import_customer.address.toUpperCase() %> N. <%= import_customer.number %>
+                     <%= import_customer.complement ? import_customer.complement.toUpperCase() : '' %></p>
+                <p><%= import_customer.neighborhood.toUpperCase() %> - <%= import_customer.city.toUpperCase() %> - <%= import_customer.state.toUpperCase() %></p>
+                <p>CEP: <%= formatCEP(import_customer.zipcode) %>
+                </p>
+                <p>CNPJ: <%= formatCNPJ(import_customer.cgc) %>
+                </p>
+             </div>
+            </div>
+            <div class="info-ship">
+                <div>
+                    <p>INV. NUMBER: <%= number %> </p>
+                    <p>DATE: <%= formatDate(date) %> </p>
+                </div>
+                <div>
+                    <p>FROM: <%= from %></p>
+                    <p>TO: <%= to %></p>
+                </div>
+                <div>
+                    <p>MODE OF TRANSPORT:  <%= model_transport %></p>
+                </div>
+            </div>
+    
+            <table class="details">
+                <thead>
+                    <tr>
+                        <th><strong>MARKS & NUMBERS</strong></th>
+                        <th>DESCRIPTIONS</th>
+                        <th>CTNS</th>
+                        <th>TOTAL G.W</th>
+                        <th>TOTAL N.W</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(product=> { %>
+                        <tr>
+                            <td>
+                                <%= product.ref %>
+                            </td>
+                            <td>
+                                <%= product.desc %>
+                            </td>
+                            <td>
+                                <%= product.cxs %>
+                            </td>
+                            <td>
+                                <%= parseFloat(product.pb).toFixed(2) %>
+                            </td>
+                            <td>
+                                <%= parseFloat(product.pl).toFixed(2) %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                        <tr>
+                            <td colspan="2"><strong>TOTAL</strong></td>
+                            <td><strong><%= totalsQtd.cxs %></strong></td>
+                            <td><strong><%= totalsQtd.pb %></strong></td>
+                            <td><strong><%= totalsQtd.pl %></strong></td>
+                        </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="stamp">
+            <img src="<%= stamp %>"/>
+        </div>
+    </div>
+</body>
+<% 
+  function formatCEP(cep) {
+    if (!cep) return '';
+    return cep.replace(/^(\d{5})(\d{3})$/, '$1-$2'); // Formata como 12345-678
+  }
+
+  function formatCNPJ(cnpj) {
+    if (!cnpj) return '';
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5'); // Formata como 12.345.678/0001-99
+  }
+%>
+
+</html>
