@@ -109,7 +109,6 @@ export class InvoicesController {
   @Get('download-model')
   @Permissions('invoice')
   async downloadFile(@Res() res: Response) {
-    console.log('oi');
     try {
       const filePath = path.join(
         __dirname,
