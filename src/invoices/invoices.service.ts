@@ -74,20 +74,21 @@ export class InvoicesService {
         let subtotal = 0;
         let total = Number(savedInvoice.shipping_value);
         for (let i = 1; i < data.length; i++) {
-          if (data[i].__EMPTY_1 === undefined) {
+          if (!data[i].REF) {
             continue;
           }
 
           const body: CreateInvoiceItemPayload = {
-            ref: data[i].__EMPTY_1,
-            desc: data[i].__EMPTY_2,
-            qtd: data[i].__EMPTY_3,
-            unit: data[i].__EMPTY_4,
-            total: data[i].__EMPTY_5,
-            ncm: data[i].__EMPTY_6,
-            cxs: data[i].__EMPTY_7,
-            pb: data[i].__EMPTY_8,
-            pl: data[i].__EMPTY_9,
+            ref: data[i].REF,
+            desc: data[i].DESC || data[i]['DESC'],
+            um: data[i].UM,
+            qtd: data[i].QTY,
+            unit: data[i].UNIT,
+            total: data[i].TOTAL,
+            ncm: data[i].NCM,
+            cxs: data[i].CXS,
+            pb: data[i].PB,
+            pl: data[i].PL,
             invoice: savedInvoice,
           };
 

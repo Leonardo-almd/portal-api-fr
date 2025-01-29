@@ -12,6 +12,9 @@ export class InvoiceItem {
   @Column()
   desc: string;
 
+  @Column({nullable: true})
+  um: string;
+
   @Column('int')
   qtd: string;
 

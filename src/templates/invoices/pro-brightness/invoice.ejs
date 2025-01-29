@@ -136,15 +136,18 @@
         }
 
         .stamp {
-            padding-top: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
+            position: fixed; 
+    bottom: 0; 
+    right: 0; 
+    padding: 20px; 
+    width: auto; 
+    display: flex;
+    justify-content: flex-end;
+    z-index: 1000;
         }
 
         .stamp img {
-            max-width: 250px;
+            max-width: 150px;
             height: auto;
             padding-left: 20px;
           }
@@ -215,7 +218,7 @@
                     <tr>
                         <th><strong>MARKS & NUMBERS</strong></th>
                         <th>DESCRIPTIONS</th>
-                        <th>QUANTITIES</th>
+                        <th colspan="2">QUANTITIES</th>
                         <th>UNIT PRICE (USD)</th>
                         <th>Amount (USD)</th>
                     </tr>
@@ -231,6 +234,9 @@
                             </td>
                             <td>
                                 <%= product.qtd %>
+                            </td>
+                            <td>
+                                <%= product.um %>
                             </td>
                             <td>
                                 <%= product.unit %>
@@ -273,14 +279,9 @@
             </div>
         </div>
         <div class="terms">
-            <p><strong>BENEFICIARY NAME:</strong> <%= beneficiary_name %></p>
-            <p><strong>BENEFICIARY ADRESS:</strong> <%= beneficiary_address %></p>
-            <p><strong>BENEFICIARY BANK NAME:</strong> <%= bank_name %></p>
-            <p><strong>BENEFICIARY ACCOUNT NO. (USD):</strong> <%= account_number %></p>
-            <p><strong>BANK ADDRESS:</strong> <%= bank_address %></p>
-            <p><strong>SWIFT CODE:</strong><%= swift %></p>
-            <p><strong>BENEFICIARY BANK CODE:</strong> <%= bank_code %></p>
-
+            <% bank_data.forEach(data=> { %>
+                <p><strong><%= data.header %>:</strong> <%= data.desc %></p>
+            <% }); %>
         </div>
         <div class="stamp">
             <img src="<%= stamp %>"/>

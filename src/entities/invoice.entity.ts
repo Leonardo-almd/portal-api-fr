@@ -9,7 +9,7 @@ export class Invoice {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Exporter)
+  @ManyToOne(() => Exporter, {nullable: true})
   @JoinColumn({ name: 'exporter' })
   exporter: Exporter;
 
@@ -60,26 +60,8 @@ export class Invoice {
   }})
   total: number;
 
-  @Column()
-  beneficiary_name: string;
-
-  @Column()
-  beneficiary_address: string;
-
-  @Column()
-  bank_name: string;
-
-  @Column()
-  bank_address: string;
-
-  @Column()
-  account_number: string;
-
-  @Column()
-  swift: string;
-
-  @Column()
-  bank_code: string;
+  @Column({ type: 'simple-json', nullable: true })
+  bank_data: { desc: string; header: string; item: number; }[];
 
   @OneToMany(() => InvoiceItem, (item) => item.invoice, { cascade: true, onDelete: 'CASCADE' })
   items: InvoiceItem[];

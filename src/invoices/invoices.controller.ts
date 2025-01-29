@@ -1,5 +1,19 @@
 // src/invoices/invoices.controller.ts
-import { Controller, Post, Get, UploadedFile, UseInterceptors, UseGuards, Query, Body, Res, Request, ParseIntPipe, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  UploadedFile,
+  UseInterceptors,
+  UseGuards,
+  Query,
+  Body,
+  Res,
+  Request,
+  ParseIntPipe,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InvoicesService } from './invoices.service';
@@ -9,6 +23,8 @@ import { Invoice } from 'src/entities/invoice.entity';
 import { PermissionsGuard } from 'src/guards/permissions.guard';
 import { Permissions } from '../decorators/permissions.decorator';
 import archiver from 'archiver';
+import * as path from 'path';
+import * as fs from 'fs';
 
 type CreatePayload = Omit<Invoice, 'created_at' | 'updated_at' | 'deleted_at'>;
 
@@ -20,7 +36,11 @@ export class InvoicesController {
   @Post()
   @Permissions('invoice')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() payload: CreatePayload, @Request() req) {
+  uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() payload: CreatePayload,
+    @Request() req,
+  ) {
     if (!file && !payload.id) {
       throw new Error('Arquivo não encontrado.');
     }
@@ -29,15 +49,23 @@ export class InvoicesController {
 
   @Get(':id/export')
   @Permissions('invoice')
-  async exportInvoices(@Param('id', ParseIntPipe) id: number, @Query('model') model: string, @Res() res: Response) {
+  async exportInvoices(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('model') model: string,
+    @Res() res: Response,
+  ) {
     const htmlInvoice = await this.service.export(id, model, 'invoice');
-    const htmlPackingList = await this.service.export(id, model, 'packing-list');
-  
+    const htmlPackingList = await this.service.export(
+      id,
+      model,
+      'packing-list',
+    );
+
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/google-chrome',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // usar apenas em produção
+      // executablePath: '/usr/bin/google-chrome',
+      // args: ['--no-sandbox', '--disable-setuid-sandbox'] // usar apenas em produção
     });
-  
+
     // Gerar PDF para a invoice
     const [pageInvoice] = await browser.pages();
     await pageInvoice.setContent(htmlInvoice as string, { waitUntil: 'load' });
@@ -46,37 +74,76 @@ export class InvoicesController {
       printBackground: true,
       margin: { bottom: 5, left: 5, top: 5, right: 5 },
     });
-  
+
     // Gerar PDF para o packing list
     const [pagePackingList] = await browser.pages();
-    await pagePackingList.setContent(htmlPackingList as string, { waitUntil: 'load' });
+    await pagePackingList.setContent(htmlPackingList as string, {
+      waitUntil: 'load',
+    });
     const pdfPackingList = await pagePackingList.pdf({
       format: 'A4',
       printBackground: true,
       margin: { bottom: 5, left: 5, top: 5, right: 5 },
     });
-  
+
     await browser.close();
-  
+
     // Configuração para criar o arquivo ZIP
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', 'attachment; filename=invoices_and_packing-list.zip');
-  
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=invoices_and_packing-list.zip',
+    );
+
     const archive = archiver('zip', { zlib: { level: 9 } });
     archive.pipe(res);
-  
+
     // Adiciona os PDFs ao ZIP
     archive.append(pdfInvoice, { name: 'invoice.pdf' });
     archive.append(pdfPackingList, { name: 'packing-list.pdf' });
-  
+
     // Finaliza o arquivo ZIP e envia
     await archive.finalize();
   }
 
+  @Get('download-model')
+  @Permissions('invoice')
+  async downloadFile(@Res() res: Response) {
+    console.log('oi');
+    try {
+      const filePath = path.join(
+        __dirname,
+        '../uploads',
+        'modelo-invoice.xlsx',
+      );
+      if (fs.existsSync(filePath)) {
+        res.download(filePath, 'modelo-invoice.xlsx', (err) => {
+          if (err) {
+            console.error('Erro ao fazer o download do arquivo:', err);
+            res.status(500).send('Erro ao fazer o download do arquivo');
+          }
+        });
+      } else {
+        res.status(404).send('Arquivo não encontrado');
+      }
+    } catch (error) {
+      console.error('Erro interno:', error);
+      res.status(500).send('Erro interno do servidor');
+    }
+  }
+
   @Get()
   @Permissions('invoice')
-  async findAll(@Query('page', ParseIntPipe) page: number = 1, @Query('pageSize', ParseIntPipe) pageSize: number = 10, @Query('search') search: string) {
-    const queryParams = { page: Number(page), pageSize: Number(pageSize), search: search?.trim() };
+  async findAll(
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('pageSize', ParseIntPipe) pageSize: number = 10,
+    @Query('search') search: string,
+  ) {
+    const queryParams = {
+      page: Number(page),
+      pageSize: Number(pageSize),
+      search: search?.trim(),
+    };
     return this.service.findAll(queryParams);
   }
 
