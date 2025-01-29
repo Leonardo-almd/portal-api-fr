@@ -62,8 +62,8 @@ export class InvoicesController {
     );
 
     const browser = await puppeteer.launch({
-      // executablePath: '/usr/bin/google-chrome',
-      // args: ['--no-sandbox', '--disable-setuid-sandbox'] // usar apenas em produção
+      executablePath: '/usr/bin/google-chrome',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // usar apenas em produção
     });
 
     // Gerar PDF para a invoice
